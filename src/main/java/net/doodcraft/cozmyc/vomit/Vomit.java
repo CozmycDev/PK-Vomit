@@ -22,7 +22,7 @@ public class Vomit extends WaterAbility implements AddonAbility {
         super(player);
 
         this.player = player;
-        this.direction = player.getLocation().getDirection().normalize();
+        this.direction = player.getLocation().getDirection();
         this.particleSpacing = particleSpacing;
         this.maxCurveIntensity = maxCurveIntensity;
 
@@ -34,7 +34,7 @@ public class Vomit extends WaterAbility implements AddonAbility {
 
     private double calculateBeamLength() {
         Location eyeLocation = player.getEyeLocation();
-        Vector direction = eyeLocation.getDirection().normalize();
+        Vector direction = eyeLocation.getDirection();
 
         double maxDistance = 64;
         for (double distance = 0; distance <= maxDistance; distance += particleSpacing) {
