@@ -32,27 +32,25 @@ public class Vomit extends WaterAbility implements AddonAbility {
         start();
     }
 
-    private double calculateBeamLength() {
-        Location eyeLocation = player.getEyeLocation();
-        Vector direction = eyeLocation.getDirection();
-
-        double maxDistance = 64;
-        for (double distance = 0; distance <= maxDistance; distance += particleSpacing) {
-            Location testLocation = eyeLocation.clone().add(direction.clone().multiply(distance));
-            if (testLocation.getBlock().getType() != Material.AIR) {
-                new TempBlock(testLocation.getBlock(), Material.SLIME_BLOCK.createBlockData(), 12000);
-                return distance;
-            }
-        }
-        return maxDistance;
-    }
-
     @Override
     public void progress() {
         this.origin = player.getEyeLocation();
-        this.direction = player.getLocation().getDirection().normalize();
-        this.length = calculateBeamLength();
+        this.direction = player.getLocation().getDirection();
 
+        Location eyeLocation = player.getEyeLocation();
+        double maxDistance = 64;
+        double length = maxDistance;
+        
+        for (double distance = 0; distance <= maxDistance; distance += particleSpacing) {
+            Location testLocation = eyeLocation.clone().add(direction.clone().multiply(distance));
+
+            if (testLocation.getBlock().getType() != Material.AIR) {
+                new TempBlock(testLocation.getBlock(), Material.SLIME_BLOCK.createBlockData(), 12000);
+                length = distance;
+                break;
+            }
+        }
+        
         for (double i = 0; i <= length; i += particleSpacing) {
             double distanceFactor = i / length;
             double curveIntensity = maxCurveIntensity * (1 - distanceFactor);
@@ -63,11 +61,12 @@ public class Vomit extends WaterAbility implements AddonAbility {
             ParticleEffect.SLIME.display(particleLocation, 2, 0, 0, 0, 0.01);
             ParticleEffect.COMPOSTER.display(particleLocation, 2, 0, 0, 0, 0.01);
         }
-
+    
         if (System.currentTimeMillis() - getStartTime() > 5000) {
             remove();
         }
     }
+
 
     @Override
     public boolean isSneakAbility() {
